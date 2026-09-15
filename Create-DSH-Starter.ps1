@@ -108,22 +108,22 @@ npx @deepseek-ai/dsh@0.1.5-rc.1 web       # 不安裝至全域，直接執行（
 
 Write-StarterFile -RelPath '.env.example' -Eol LF -Content @'
 # DeepSeek Harness environment file
-# 复制为 .env 后，把下面的占位符换成你的 DeepSeek API Key。
-# 注意：不要把 .env 提交到 git，也不要发给别人。
+# 複製為 .env 後，把下面的預留字串替換成你的 DeepSeek API 金鑰。
+# 注意：不要把 .env 提交至 git，也不要傳送給他人。
 DEEPSEEK_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxx
 '@
 
 Write-StarterFile -RelPath '.gitignore' -Eol LF -Content @'
-# 密钥
+# 金鑰
 .env
 .env.*
 !.env.example
 
-# dsh 运行时数据（只保留技能）
+# dsh 執行時產生的資料（只保留技能）
 .dsh/*
 !.dsh/skills/
 
-# 依赖、日志、系统文件
+# 相依套件、日誌、系統檔案
 node_modules/
 *.log
 .DS_Store
@@ -195,95 +195,95 @@ cd "$(dirname "$0")"
 DSH_VERSION="0.1.5-rc.1"
 
 echo "======================================"
-echo "  DeepSeek Harness 一键启动"
+echo "  DeepSeek Harness 一鍵啟動"
 echo "======================================"
 
 if ! command -v node >/dev/null 2>&1; then
-  echo "❌ 未找到 Node.js，请先安装 Node.js 22 LTS 或更新版本：https://nodejs.org/"
+  echo "❌ 找不到 Node.js，請先安裝 Node.js 22.19 以上或 24 以上版本：https://nodejs.org/"
   exit 1
 fi
 node_major="$(node -p 'process.versions.node.split(".")[0]')"
 if [ "$node_major" -lt 22 ]; then
-  echo "⚠️  当前 Node 版本为 ${node_major}，建议使用 22 或更新版本。"
+  echo "⚠️  目前 Node 版本為 ${node_major}，建議使用 22 或更新版本。"
 fi
 
 if [ ! -f .env ]; then
   cp .env.example .env
-  echo "📝 已创建 .env：把 DEEPSEEK_API_KEY 换成你的真实 Key，保存后再运行 bash install.sh"
+  echo "📝 已建立 .env：請把 DEEPSEEK_API_KEY 替換成你的真實金鑰，儲存後再執行 bash install.sh"
   exit 0
 fi
 
 if grep -q "sk-xxxxxxxx" .env; then
-  echo "📝 .env 里还是占位 Key，请填入真实 Key 后再运行 bash install.sh"
+  echo "📝 .env 裡仍是預留的金鑰，請填入真實金鑰後再執行 bash install.sh"
   exit 1
 fi
 
 if ! command -v dsh >/dev/null 2>&1; then
-  echo "📦 正在安装 @deepseek-ai/dsh@${DSH_VERSION} ..."
+  echo "📦 正在安裝 @deepseek-ai/dsh@${DSH_VERSION} ..."
   if ! npm install -g "@deepseek-ai/dsh@${DSH_VERSION}"; then
-    echo "❌ 安装失败。如果是 EACCES 权限错误，建议用 nvm 安装 Node，或把 npm 全局目录设到用户目录，不建议直接 sudo。"
+    echo "❌ 安裝失敗。若是 EACCES 權限錯誤，建議改用 nvm 安裝 Node，或把 npm 全域目錄設到使用者目錄，不建議直接使用 sudo。"
     exit 1
   fi
 fi
 
 mkdir -p workspace
 
-echo "🚀 正在启动 dsh web（会自动打开浏览器，地址也会打印在下面；Ctrl+C 停止）"
+echo "🚀 正在啟動 dsh web（會自動開啟瀏覽器，網址也會顯示在下方；按 Ctrl+C 停止）"
 exec dsh web
 '@
 
 Write-StarterFile -RelPath '.dsh/skills/doc-summary/SKILL.md' -Eol LF -Content @'
 ---
 name: doc-summary
-description: 读取一个文档，输出结构化要点摘要（标题、核心用途、关键要点、注意事项）。
-whenToUse: 用户要求总结、概括或提炼某个文件、文档的要点时。
+description: 讀取一份文件，輸出結構化的重點摘要（標題、核心用途、關鍵重點、注意事項）。
+whenToUse: 使用者要求總結、整理或摘要某個檔案或文件的重點時。
 ---
 
-# 文档摘要
+# 文件摘要
 
-1. 确认要总结的文件路径。用户没给路径时先问；相对路径以当前工作区为准（示例文件：`workspace/note.md`）。
-2. 读取完整文件内容，不要只看开头几行。
-3. 按下面的格式输出：
+1. 確認要摘要的檔案路徑。使用者沒有提供路徑時先詢問；相對路徑以目前的工作區為準（範例檔案：`workspace/note.md`）。
+2. 讀取完整的檔案內容，不要只看開頭幾行。
+3. 依照下面的格式輸出，並使用繁體中文：
 
-## 📝 文档摘要
+## 📝 文件摘要
 
-- **标题**：
-- **核心用途**：（一句话）
-- **关键要点**（3–5 条）：
+- **標題**：
+- **核心用途**：（一句話）
+- **關鍵重點**（3–5 點）：
   1.
   2.
   3.
-- **注意事项 / 依赖**：
+- **注意事項 / 相依條件**：
 
 要求：
 
-- 简洁、准确，不大段照抄原文
-- 保留命令、路径、版本号、日期等可执行信息
-- 原文没有的信息不要编；原文有歧义时直接指出
+- 簡潔、準確，不要大段照抄原文
+- 保留指令、路徑、版本號、日期等可以直接照做的資訊
+- 原文沒有的資訊不要自行編造；原文有歧義時直接指出
 '@
 
 Write-StarterFile -RelPath 'workspace/note.md' -Eol LF -Content @'
-# 内部周报系统上线说明
+# 內部週報系統上線說明
 
-本周将内部周报系统从旧表单迁移到新服务，目的是让各组周报自动汇总到同一个看板。
+本週將內部週報系統從舊表單轉移到新服務，目的是讓各組週報自動彙整到同一個看板。
 
-## 时间安排
+## 時程安排
 
-- 9 月 18 日（周五）18:00 冻结旧表单，停止提交
-- 9 月 21 日（周一）09:00 新系统开放
+- 9 月 18 日（週五）18:00 凍結舊表單，停止提交
+- 9 月 21 日（週一）09:00 新系統開放
 
 ## 大家要做的事
 
-1. 在 9 月 18 日前把本周周报提交到旧表单
-2. 新系统用公司 SSO 登录，无需另外注册
-3. 历史周报会迁移，但附件超过 20 MB 的不会迁移，请自行备份
+1. 在 9 月 18 日前把本週週報提交到舊表單
+2. 新系統使用公司 SSO 登入，不需要另外註冊
+3. 歷史週報會轉移，但超過 20 MB 的附件不會轉移，請自行備份
 
-## 已知问题
+## 已知問題
 
-- Safari 16 以下版本导出 PDF 会乱码，请使用 Chrome 或 Edge
-- 看板的「按组筛选」要到 9 月 28 日才上线
+- Safari 16 以下版本匯出 PDF 會出現亂碼，請改用 Chrome 或 Edge
+- 看板的「依組別篩選」功能要到 9 月 28 日才會上線
 
-联系人：平台组 · 内部分机 1024
+聯絡人：平台組 · 內線分機 1024
 '@
 
 # 打包 ZIP：不用 Compress-Archive

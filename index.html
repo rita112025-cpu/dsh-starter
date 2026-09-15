@@ -497,7 +497,7 @@ cd dsh-starter</code></pre></div>
     <section id="try">
       <h2>試用示例技能</h2>
       <p>模板內建一個 <code>doc-summary</code>（文件摘要）技能和一份示例文件 <code>workspace/note.md</code>。在網頁介面的對話框輸入：</p>
-      <div class="code"><pre><code>用 doc-summary 技能总结 workspace/note.md</code></pre></div>
+      <div class="code"><pre><code>使用 doc-summary 技能整理 workspace/note.md 的內容</code></pre></div>
       <p>dsh 會讀完整份文件，輸出「標題、核心用途、關鍵要點、注意事項」四段式摘要。</p>
       <p class="small muted">示例文件是一份虛構的「內部週報系統上線說明」，可以換成你自己的文件試試看。</p>
     </section>
@@ -520,7 +520,7 @@ cd dsh-starter</code></pre></div>
         </table>
       </div>
       <h3>一次性任務範例</h3>
-      <div class="code"><pre><code>dsh --profile headless "用 doc-summary 技能总结 workspace/note.md"</code></pre></div>
+      <div class="code"><pre><code>dsh --profile headless "使用 doc-summary 技能整理 workspace/note.md 的內容"</code></pre></div>
       <p class="small muted">最終答案輸出到 stdout，思考過程輸出到 stderr；成功時結束代碼為 0，失敗為 1，方便寫進腳本。</p>
       <h3>不想全域安裝時</h3>
       <div class="code"><pre><code>npx @deepseek-ai/dsh@0.1.5-rc.1 web</code></pre></div>
@@ -531,7 +531,7 @@ cd dsh-starter</code></pre></div>
     <section id="files">
       <h2>目錄結構</h2>
       <div class="code tree"><pre><code>dsh-starter/
-├── README.md                          <span class="cm">簡體中文說明</span>
+├── README.md                          <span class="cm">繁體中文說明</span>
 ├── .env.example                       <span class="cm">複製成 .env，填 DEEPSEEK_API_KEY</span>
 ├── .gitignore                         <span class="cm">避免 .env 被提交</span>
 ├── install.bat                        <span class="cm">Windows：檢查環境、安裝、啟動</span>
@@ -599,13 +599,13 @@ cd dsh-starter</code></pre></div>
       <h3>SKILL.md 格式</h3>
       <div class="code"><span class="label">.dsh/skills/doc-summary/SKILL.md（開頭部分）</span><pre><code>---
 name: doc-summary
-description: 读取一个文档，输出结构化要点摘要。
-whenToUse: 用户要求总结、概括或提炼某个文件的要点时。
+description: 讀取一份文件，輸出結構化的重點摘要。
+whenToUse: 使用者要求總結、整理或摘要某個檔案或文件的重點時。
 ---
 
-# 文档摘要
+# 文件摘要
 
-1. 确认要总结的文件路径……</code></pre></div>
+1. 確認要摘要的檔案路徑……</code></pre></div>
       <div class="table-wrap">
         <table class="stack">
           <thead><tr><th>欄位</th><th>說明</th></tr></thead>

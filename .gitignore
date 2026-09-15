@@ -1,13 +1,13 @@
-# 密钥
+# 金鑰
 .env
 .env.*
 !.env.example
 
-# dsh 运行时数据（只保留技能）
+# dsh 執行時產生的資料（只保留技能）
 .dsh/*
 !.dsh/skills/
 
-# 依赖、日志、系统文件
+# 相依套件、日誌、系統檔案
 node_modules/
 *.log
 .DS_Store
