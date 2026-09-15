@@ -1,0 +1,821 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DeepSeek Harness 入門模板</title>
+<meta name="description" content="dsh-starter：DeepSeek Harness（@deepseek-ai/dsh 0.1.5-rc.1）入門模板的完整操作說明。">
+<script>
+  // 在繪製前套用已儲存的主題，避免閃一下
+  try {
+    var saved = localStorage.getItem('dsh-theme');
+    if (saved === 'light' || saved === 'dark') document.documentElement.setAttribute('data-theme', saved);
+  } catch (e) {}
+</script>
+<style>
+:root{
+  --fs-micro:16px;
+  --fs-small:20px;
+  --fs-body:23px;
+  --fs-lede:26px;
+  --fs-h3:28px;
+  --fs-h2:40px;
+  --fs-h1:clamp(38px,5vw,64px);
+  --fs-hero:clamp(32px,4vw,48px);
+  --lh-body:1.72;
+  --lh-small:1.6;
+  --lh-head:1.18;
+  --measure:34em;
+  --measure-wide:44em;
+  --nav-h:76px;
+  --radius:12px;
+
+  --bg:#f7f6f2;
+  --surface:#ffffff;
+  --surface-2:#efede6;
+  --text:#1d1d1b;
+  --muted:#5a5a55;
+  --line:#d9d6cc;
+  --accent:#2f5fd0;
+  --accent-ink:#ffffff;
+  --accent-soft:#e3eafb;
+  --code-bg:#1f2330;
+  --code-text:#e9ecf4;
+  --warn-bg:#fff3d6;
+  --warn-line:#e0a100;
+  --danger-bg:#fde6e4;
+  --danger-line:#c9382b;
+  --ok-bg:#e2f4e8;
+  --ok-line:#2e8b57;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171c;
+    --surface:#1d2027;
+    --surface-2:#262a33;
+    --text:#eceae4;
+    --muted:#a9a8a2;
+    --line:#353a45;
+    --accent:#8fb0ff;
+    --accent-ink:#10131a;
+    --accent-soft:#243150;
+    --code-bg:#0e1015;
+    --code-text:#e6e8ef;
+    --warn-bg:#3a2f12;
+    --warn-line:#e0b040;
+    --danger-bg:#3d1d1a;
+    --danger-line:#f07a6e;
+    --ok-bg:#15311f;
+    --ok-line:#5fc58a;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171c;
+  --surface:#1d2027;
+  --surface-2:#262a33;
+  --text:#eceae4;
+  --muted:#a9a8a2;
+  --line:#353a45;
+  --accent:#8fb0ff;
+  --accent-ink:#10131a;
+  --accent-soft:#243150;
+  --code-bg:#0e1015;
+  --code-text:#e6e8ef;
+  --warn-bg:#3a2f12;
+  --warn-line:#e0b040;
+  --danger-bg:#3d1d1a;
+  --danger-line:#f07a6e;
+  --ok-bg:#15311f;
+  --ok-line:#5fc58a;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+html{scroll-padding-top:calc(var(--nav-h) + 16px);scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Heiti TC",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:var(--fs-body);
+  line-height:var(--lh-body);
+  -webkit-text-size-adjust:100%;
+}
+a{color:var(--accent);text-underline-offset:.18em}
+a:hover{text-decoration-thickness:2px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:4px}
+
+/* 頂部列 */
+.topbar{
+  position:sticky;top:0;z-index:10;
+  height:var(--nav-h);
+  background:color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);
+}
+.topbar-inner{
+  max-width:1440px;height:100%;margin:0 auto;padding-inline:24px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.brand{font-weight:700;font-size:var(--fs-body);color:var(--text);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand span{color:var(--muted);font-weight:400}
+.theme-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  font:inherit;font-size:var(--fs-small);
+  min-height:48px;padding:6px 18px;
+  color:var(--text);background:var(--surface);
+  border:1px solid var(--line);border-radius:999px;cursor:pointer;white-space:nowrap;
+}
+.theme-btn:hover{border-color:var(--accent)}
+.theme-btn svg{width:24px;height:24px;flex:none}
+
+/* 版面 */
+.layout{
+  max-width:1440px;margin:0 auto;padding-inline:24px;
+  display:grid;grid-template-columns:1fr;gap:48px;
+}
+@media (min-width:1200px){
+  .layout{grid-template-columns:300px minmax(0,1fr)}
+}
+.toc{display:none}
+@media (min-width:1200px){
+  .toc{display:block;position:sticky;top:calc(var(--nav-h) + 32px);align-self:start;
+    max-height:calc(100vh - var(--nav-h) - 48px);overflow:auto;padding-block:32px 24px}
+}
+.toc h2{font-size:var(--fs-micro);letter-spacing:.08em;color:var(--muted);margin:0 0 12px;font-weight:600}
+.toc ol{list-style:none;margin:0;padding:0}
+.toc li{margin:0}
+.toc a{display:block;padding:6px 12px;border-left:3px solid transparent;color:var(--muted);text-decoration:none;font-size:var(--fs-small);line-height:1.45}
+.toc a:hover{color:var(--text);border-left-color:var(--line)}
+.toc a.active{color:var(--text);border-left-color:var(--accent);font-weight:600}
+
+.toc-mobile{margin-top:32px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:4px 20px}
+.toc-mobile summary{cursor:pointer;font-weight:600;padding-block:12px}
+.toc-mobile ol{margin:0 0 16px;padding-left:1.4em}
+.toc-mobile li{font-size:var(--fs-small)}
+@media (min-width:1200px){.toc-mobile{display:none}}
+
+main{min-width:0;padding-block:24px 96px}
+
+/* 首屏 */
+.hero{padding-block:48px 24px;border-bottom:1px solid var(--line)}
+.eyebrow{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px}
+.chip{
+  display:inline-block;font-size:var(--fs-micro);line-height:1.4;
+  padding:4px 12px;border-radius:999px;
+  background:var(--accent-soft);color:var(--text);border:1px solid var(--line);
+}
+h1{font-size:var(--fs-h1);line-height:var(--lh-head);margin:0 0 20px;letter-spacing:-.01em;text-wrap:balance}
+.lede{font-size:var(--fs-lede);color:var(--muted);max-width:32em;margin:0 0 32px}
+.actions{display:flex;flex-wrap:wrap;gap:16px}
+.btn{
+  display:inline-flex;align-items:center;gap:10px;min-height:56px;padding:10px 26px;
+  border-radius:999px;font-weight:600;text-decoration:none;font-size:var(--fs-body);
+  border:2px solid var(--accent);
+}
+.btn-primary{background:var(--accent);color:var(--accent-ink)}
+.btn-ghost{color:var(--accent);background:transparent}
+.btn:hover{filter:brightness(1.06)}
+
+section{padding-block:64px 8px;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:0}
+h2{font-size:var(--fs-h2);line-height:var(--lh-head);margin:0 0 24px;text-wrap:balance}
+h3{font-size:var(--fs-h3);line-height:var(--lh-head);margin:44px 0 16px;text-wrap:balance}
+p,li{max-width:var(--measure)}
+p{margin:0 0 18px}
+ul,ol{padding-left:1.4em;margin:0 0 18px}
+li{margin-bottom:10px}
+li::marker{color:var(--muted)}
+strong{font-weight:700}
+.muted{color:var(--muted)}
+.small{font-size:var(--fs-small);line-height:var(--lh-small)}
+
+code{
+  font-family:"Cascadia Code","JetBrains Mono",Consolas,"SFMono-Regular",Menlo,monospace;
+  font-size:.87em;
+  background:var(--surface-2);border:1px solid var(--line);border-radius:6px;
+  padding:1px 7px;line-height:1.4;overflow-wrap:anywhere;
+}
+
+/* 程式碼區塊 */
+.code{position:relative;max-width:var(--measure-wide);margin:0 0 24px}
+.code pre{
+  margin:0;overflow-x:auto;
+  background:var(--code-bg);color:var(--code-text);
+  border-radius:var(--radius);padding:22px 24px;padding-right:110px;
+  font-family:"Cascadia Code","JetBrains Mono",Consolas,"SFMono-Regular",Menlo,monospace;
+  font-size:var(--fs-small);line-height:1.6;
+}
+.code pre code{background:none;border:0;padding:0;font-size:inherit;color:inherit;overflow-wrap:normal}
+.code .label{
+  display:block;font-size:var(--fs-micro);color:var(--muted);margin-bottom:6px;
+}
+.copy{
+  position:absolute;right:12px;bottom:12px;
+  font:inherit;font-size:var(--fs-micro);line-height:1.2;
+  min-height:40px;padding:6px 14px;border-radius:8px;cursor:pointer;
+  color:var(--code-text);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);
+}
+.copy:hover{background:rgba(255,255,255,.18)}
+.cm{color:#9aa3b8}
+
+/* 步驟 */
+.steps{list-style:none;padding:0;counter-reset:step;margin:0 0 24px}
+.steps > li{
+  counter-increment:step;position:relative;
+  padding:0 0 28px 72px;margin:0;max-width:calc(var(--measure) + 72px);
+}
+.steps > li::before{
+  content:counter(step);
+  position:absolute;left:0;top:-2px;
+  width:48px;height:48px;border-radius:50%;
+  display:grid;place-items:center;
+  background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:var(--fs-body);
+}
+.steps > li::after{
+  content:"";position:absolute;left:23px;top:54px;bottom:6px;width:2px;background:var(--line);
+}
+.steps > li:last-child::after{display:none}
+.steps h3{margin:4px 0 10px;font-size:var(--fs-lede)}
+
+/* 提示框 */
+.note{
+  max-width:var(--measure-wide);
+  border-left:6px solid var(--accent);background:var(--accent-soft);
+  border-radius:0 var(--radius) var(--radius) 0;
+  padding:18px 24px;margin:0 0 24px;
+}
+.note p:last-child,.note ul:last-child{margin-bottom:0}
+.note-title{font-weight:700;margin:0 0 8px;display:block}
+.note.warn{border-left-color:var(--warn-line);background:var(--warn-bg)}
+.note.danger{border-left-color:var(--danger-line);background:var(--danger-bg)}
+.note.ok{border-left-color:var(--ok-line);background:var(--ok-bg)}
+
+/* 雙欄卡片 */
+.cards{display:grid;grid-template-columns:1fr;gap:20px;margin:0 0 24px;max-width:var(--measure-wide)}
+@media (min-width:960px){.cards{grid-template-columns:1fr 1fr}}
+.card{min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+.card h3{margin:0 0 12px;font-size:var(--fs-lede)}
+.card p:last-child{margin-bottom:0}
+
+/* 表格 */
+.table-wrap{max-width:var(--measure-wide);overflow-x:auto;margin:0 0 24px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-small);line-height:var(--lh-small)}
+th,td{text-align:left;vertical-align:top;padding:12px 16px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+th{background:var(--surface-2);font-weight:600;white-space:nowrap}
+td code{white-space:nowrap}
+@media (max-width:760px){
+  .stack thead{display:none}
+  .stack tr{display:block;border-bottom:1px solid var(--line);padding:10px 0}
+  .stack tr:last-child{border-bottom:0}
+  .stack td{display:block;border:0;padding:4px 16px}
+  .stack td code{white-space:normal}
+}
+
+/* 優先順序 */
+.priority{list-style:none;padding:0;margin:0 0 24px;max-width:var(--measure-wide)}
+.priority li{
+  display:flex;gap:16px;align-items:flex-start;max-width:none;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px 20px;margin-bottom:10px;
+}
+.priority .rank{flex:none;font-weight:700;color:var(--accent);min-width:2.2em}
+
+/* 疑難排解 */
+details.faq{
+  max-width:var(--measure-wide);
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  margin:0 0 14px;padding:0 24px;
+}
+details.faq summary{
+  cursor:pointer;font-weight:600;padding-block:18px;list-style:none;
+  display:flex;justify-content:space-between;gap:16px;
+}
+details.faq summary::-webkit-details-marker{display:none}
+details.faq summary::after{content:"＋";color:var(--muted);flex:none}
+details.faq[open] summary::after{content:"－"}
+details.faq[open]{padding-bottom:6px}
+
+.tree{font-size:var(--fs-small)}
+
+footer{
+  max-width:1440px;margin:0 auto;padding:32px 24px 56px;
+  color:var(--muted);font-size:var(--fs-small);line-height:var(--lh-small);
+  border-top:1px solid var(--line);
+}
+footer p{max-width:none}
+
+@media (max-width:600px){
+  .topbar-inner,.layout,footer{padding-inline:16px}
+  .theme-btn .theme-text{display:none}
+  .theme-btn{padding:6px 12px}
+  .steps > li{padding-left:60px}
+  .steps > li::before{width:42px;height:42px}
+  .steps > li::after{left:20px;top:48px}
+  .code pre{padding:18px 18px 64px}
+  .copy{right:10px;bottom:10px}
+  section{padding-block:48px 4px}
+}
+
+@media print{
+  :root{--bg:#fff;--surface:#fff;--surface-2:#f2f2f2;--text:#000;--muted:#444;--line:#bbb;--code-bg:#f4f4f4;--code-text:#000;--accent:#1a3f99}
+  body{font-size:12pt;line-height:1.5}
+  h1{font-size:24pt} h2{font-size:18pt} h3{font-size:14pt}
+  .lede{font-size:13pt}
+  .chip,.small,table,.code pre,.toc a{font-size:10pt}
+  .chip{font-size:9pt}
+  .topbar,.toc,.toc-mobile,.copy,.actions,.theme-btn{display:none!important}
+  .layout{display:block}
+  section{padding-block:18pt 6pt;break-inside:auto}
+  details.faq{display:block}
+  details.faq > *{display:block}
+  .code pre{white-space:pre-wrap;padding-right:24px}
+  a{color:#000}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#top">dsh-starter <span>· DeepSeek Harness 入門模板</span></a>
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="切換亮色／暗色">
+      <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"></svg>
+      <span class="theme-text" id="themeText">暗色</span>
+    </button>
+  </div>
+</header>
+
+<div class="layout" id="top">
+  <nav class="toc" aria-label="目錄">
+    <h2>目錄</h2>
+    <ol id="tocList">
+      <li><a href="#requirements">準備工作</a></li>
+      <li><a href="#quickstart">快速開始</a></li>
+      <li><a href="#web">打開網頁介面</a></li>
+      <li><a href="#try">試用示例技能</a></li>
+      <li><a href="#commands">常用指令</a></li>
+      <li><a href="#files">目錄結構</a></li>
+      <li><a href="#apikey">API Key 與 .env</a></li>
+      <li><a href="#skills">撰寫技能</a></li>
+      <li><a href="#generator">重新產生模板</a></li>
+      <li><a href="#versions">版本與升級</a></li>
+      <li><a href="#troubleshooting">疑難排解</a></li>
+      <li><a href="#security">安全須知</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <div class="hero">
+      <div class="eyebrow">
+        <span class="chip">@deepseek-ai/dsh 0.1.5-rc.1</span>
+        <span class="chip">預發布版</span>
+        <span class="chip">Windows · macOS · Linux</span>
+      </div>
+      <h1>DeepSeek Harness 入門模板</h1>
+      <p class="lede">下載、填入 API Key、雙擊啟動，幾分鐘內就能在瀏覽器裡使用 DeepSeek Harness（dsh），並試用一個已經寫好的「文件摘要」技能。</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="dsh-starter.zip" download>下載 dsh-starter.zip</a>
+        <a class="btn btn-ghost" href="https://github.com/rita112025-cpu/dsh-starter">GitHub 倉庫</a>
+      </div>
+
+      <details class="toc-mobile">
+        <summary>目錄</summary>
+        <ol>
+          <li><a href="#requirements">準備工作</a></li>
+          <li><a href="#quickstart">快速開始</a></li>
+          <li><a href="#web">打開網頁介面</a></li>
+          <li><a href="#try">試用示例技能</a></li>
+          <li><a href="#commands">常用指令</a></li>
+          <li><a href="#files">目錄結構</a></li>
+          <li><a href="#apikey">API Key 與 .env</a></li>
+          <li><a href="#skills">撰寫技能</a></li>
+          <li><a href="#generator">重新產生模板</a></li>
+          <li><a href="#versions">版本與升級</a></li>
+          <li><a href="#troubleshooting">疑難排解</a></li>
+          <li><a href="#security">安全須知</a></li>
+        </ol>
+      </details>
+    </div>
+
+    <!-- 準備工作 -->
+    <section id="requirements">
+      <h2>準備工作</h2>
+      <div class="cards">
+        <div class="card">
+          <h3>Node.js</h3>
+          <p><strong>22.19 以上的 22.x</strong>，或 <strong>24 以上</strong>。</p>
+          <p class="small muted">到 <a href="https://nodejs.org/">nodejs.org</a> 下載 LTS 版。檢查版本：<code>node -v</code></p>
+        </div>
+        <div class="card">
+          <h3>DeepSeek API Key</h3>
+          <p>到 DeepSeek 開放平台申請，格式是 <code>sk-</code> 開頭的一串字。</p>
+          <p class="small muted">Key 等同密碼，不要貼到聊天、截圖或公開倉庫。</p>
+        </div>
+      </div>
+      <div class="note">
+        <span class="note-title">只從官方來源取得 dsh</span>
+        <p>npm 套件 <code>@deepseek-ai/dsh</code>，或官方倉庫 <a href="https://github.com/deepseek-ai/deepseek-harness">github.com/deepseek-ai/deepseek-harness</a>。不要下載來路不明的 <code>.exe</code> 安裝檔。</p>
+      </div>
+    </section>
+
+    <!-- 快速開始 -->
+    <section id="quickstart">
+      <h2>快速開始</h2>
+      <ol class="steps">
+        <li>
+          <h3>取得模板</h3>
+          <div class="cards">
+            <div class="card">
+              <h3>下載 ZIP</h3>
+              <p>下載 <a href="dsh-starter.zip" download><code>dsh-starter.zip</code></a> 並解壓縮，進入 <code>dsh-starter</code> 資料夾。</p>
+              <p class="small muted">Windows「解壓縮全部」預設會多包一層 <code>dsh-starter\dsh-starter</code>，請進看得到 <code>install.bat</code> 的那層。</p>
+            </div>
+            <div class="card">
+              <h3>用 git clone</h3>
+              <div class="code"><pre><code>git clone https://github.com/rita112025-cpu/dsh-starter.git
+cd dsh-starter</code></pre></div>
+              <p class="small muted">倉庫根目錄就是模板本身，示例技能可以直接讀到。</p>
+            </div>
+          </div>
+        </li>
+        <li>
+          <h3>第一次執行啟動腳本</h3>
+          <div class="cards">
+            <div class="card">
+              <h3>Windows</h3>
+              <p>雙擊 <code>install.bat</code>。</p>
+              <p class="small muted">會自動建立 <code>.env</code> 並用記事本打開。</p>
+            </div>
+            <div class="card">
+              <h3>macOS / Linux</h3>
+              <p>在資料夾裡打開終端機，執行：</p>
+              <div class="code"><pre><code>bash install.sh</code></pre></div>
+            </div>
+          </div>
+        </li>
+        <li>
+          <h3>填入 API Key</h3>
+          <p>把 <code>.env</code> 裡的佔位字串換成你的真實 Key，然後<strong>存檔</strong>：</p>
+          <div class="code"><span class="label">.env</span><pre><code>DEEPSEEK_API_KEY=sk-你的真實Key</code></pre></div>
+        </li>
+        <li>
+          <h3>再執行一次啟動腳本</h3>
+          <p>腳本會檢查 Node.js；還沒安裝 dsh 時會先執行 <code>npm install -g @deepseek-ai/dsh@0.1.5-rc.1</code>，接著啟動 <code>dsh web</code>。</p>
+          <p class="small muted">終端機視窗要保持開著，關掉就等於停止 dsh。要停止時按 <code>Ctrl+C</code>。</p>
+        </li>
+        <li>
+          <h3>在瀏覽器裡使用</h3>
+          <p>瀏覽器會自動打開。沒有打開時，看下一節。</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- 打開網頁介面 -->
+    <section id="web">
+      <h2>打開網頁介面</h2>
+      <p>啟動成功後，終端機會印出一行以 <code>dsh web:</code> 開頭的網址：</p>
+      <div class="code"><span class="label">終端機輸出範例（實際網址以你的畫面為準）</span><pre><code>dsh web: http://127.0.0.1:3080/...（後面帶認證參數）</code></pre></div>
+      <ul>
+        <li>預設位址是 <code>127.0.0.1:3080</code>。</li>
+        <li>網址裡帶<strong>一次性認證參數</strong>，每次啟動都不同。只輸入 <code>127.0.0.1:3080</code> 是進不去的，請複製<strong>整行網址</strong>。</li>
+        <li>透過 SSH 連線啟動時，不會自動打開瀏覽器。</li>
+      </ul>
+      <div class="note warn">
+        <span class="note-title">3080 被佔用時，dsh 會直接啟動失敗</span>
+        <p>dsh 不會自動換一個埠號。請改用其他埠號啟動：</p>
+        <div class="code"><pre><code>dsh web --port 8080</code></pre></div>
+        <p>或讓系統自己挑一個空閒的埠號：</p>
+        <div class="code"><pre><code>dsh web --port 0</code></pre></div>
+      </div>
+    </section>
+
+    <!-- 試用示例技能 -->
+    <section id="try">
+      <h2>試用示例技能</h2>
+      <p>模板內建一個 <code>doc-summary</code>（文件摘要）技能和一份示例文件 <code>workspace/note.md</code>。在網頁介面的對話框輸入：</p>
+      <div class="code"><pre><code>用 doc-summary 技能总结 workspace/note.md</code></pre></div>
+      <p>dsh 會讀完整份文件，輸出「標題、核心用途、關鍵要點、注意事項」四段式摘要。</p>
+      <p class="small muted">示例文件是一份虛構的「內部週報系統上線說明」，可以換成你自己的文件試試看。</p>
+    </section>
+
+    <!-- 常用指令 -->
+    <section id="commands">
+      <h2>常用指令</h2>
+      <p>以下指令都要<strong>在模板資料夾裡</strong>執行，因為 dsh 只會讀取啟動目錄裡的 <code>.env</code>。</p>
+      <div class="table-wrap">
+        <table class="stack">
+          <thead><tr><th>指令</th><th>用途</th></tr></thead>
+          <tbody>
+            <tr><td><code>dsh web</code></td><td>啟動網頁介面（等同 <code>dsh --profile web</code>）</td></tr>
+            <tr><td><code>dsh web --port 8080</code></td><td>指定埠號；<code>--port 0</code> 讓系統挑空閒埠號</td></tr>
+            <tr><td><code>dsh web --no-open</code></td><td>不要自動打開瀏覽器</td></tr>
+            <tr><td><code>dsh web --help</code></td><td>網頁介面自己的參數說明</td></tr>
+            <tr><td><code>dsh --help</code></td><td>啟動器的說明</td></tr>
+            <tr><td><code>dsh --profile headless "任務"</code></td><td>一次性任務：結果印在終端機後結束，不能接著追問</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>一次性任務範例</h3>
+      <div class="code"><pre><code>dsh --profile headless "用 doc-summary 技能总结 workspace/note.md"</code></pre></div>
+      <p class="small muted">最終答案輸出到 stdout，思考過程輸出到 stderr；成功時結束代碼為 0，失敗為 1，方便寫進腳本。</p>
+      <h3>不想全域安裝時</h3>
+      <div class="code"><pre><code>npx @deepseek-ai/dsh@0.1.5-rc.1 web</code></pre></div>
+      <p class="small muted">一樣要在模板資料夾裡執行。</p>
+    </section>
+
+    <!-- 目錄結構 -->
+    <section id="files">
+      <h2>目錄結構</h2>
+      <div class="code tree"><pre><code>dsh-starter/
+├── README.md                          <span class="cm">簡體中文說明</span>
+├── .env.example                       <span class="cm">複製成 .env，填 DEEPSEEK_API_KEY</span>
+├── .gitignore                         <span class="cm">避免 .env 被提交</span>
+├── install.bat                        <span class="cm">Windows：檢查環境、安裝、啟動</span>
+├── install.sh                         <span class="cm">macOS / Linux：同上</span>
+├── .dsh/
+│   └── skills/
+│       └── doc-summary/
+│           └── SKILL.md               <span class="cm">示例技能</span>
+└── workspace/
+    └── note.md                        <span class="cm">示例文件</span></code></pre></div>
+      <p class="small muted">以 <code>.</code> 開頭的檔案和資料夾（<code>.env.example</code>、<code>.dsh</code>）在 macOS / Linux 預設是隱藏的。Finder 按 <code>Cmd+Shift+.</code> 可以顯示。</p>
+      <h3>啟動腳本做了哪些事</h3>
+      <ol>
+        <li>切換到腳本所在的資料夾</li>
+        <li>確認有 Node.js，版本低於 22 時提醒</li>
+        <li>沒有 <code>.env</code> 就從 <code>.env.example</code> 複製一份，請你填 Key 後結束</li>
+        <li><code>.env</code> 還是佔位 Key 時提醒你修改並結束</li>
+        <li>找不到 <code>dsh</code> 指令時執行 <code>npm install -g @deepseek-ai/dsh@0.1.5-rc.1</code></li>
+        <li>建立 <code>workspace</code> 資料夾，執行 <code>dsh web</code></li>
+      </ol>
+    </section>
+
+    <!-- API Key -->
+    <section id="apikey">
+      <h2>API Key 與 .env</h2>
+      <p>dsh 依照下面的順序找 <code>DEEPSEEK_API_KEY</code>，<strong>先找到的就用</strong>：</p>
+      <ol class="priority">
+        <li><span class="rank">1</span><span>系統或終端機裡的環境變數</span></li>
+        <li><span class="rank">2</span><span>在 dsh 裡儲存過的 Key：<code>~/.dsh/.credentials.yaml</code></span></li>
+        <li><span class="rank">3</span><span>啟動目錄裡的 <code>.env</code>（也就是模板資料夾）</span></li>
+        <li><span class="rank">4</span><span>使用者目錄的 <code>~/.dsh/.env</code></span></li>
+      </ol>
+      <div class="note warn">
+        <span class="note-title">改了 .env 卻沒生效？</span>
+        <ul>
+          <li>先檢查第 1、2 項。環境變數就算設成<strong>空值</strong>，也會擋住 <code>.env</code>。</li>
+          <li><code>.env</code> 只讀<strong>啟動目錄</strong>那一份，不會往上層資料夾找。</li>
+          <li>改完要重新啟動 dsh。</li>
+        </ul>
+      </div>
+      <p class="small muted"><code>~</code> 代表使用者目錄：Windows 是 <code>C:\Users\你的帳號</code>，macOS 是 <code>/Users/你的帳號</code>。<code>.env</code> 不接受 <code>DSH_*</code>、<code>PATH</code>、<code>NODE_OPTIONS</code> 這類變數；代理伺服器相關變數只能寫在 <code>~/.dsh/.env</code>。</p>
+    </section>
+
+    <!-- 技能 -->
+    <section id="skills">
+      <h2>撰寫技能</h2>
+      <p>技能是一份 Markdown 說明書，告訴 dsh 遇到某類任務時該怎麼做。新增或修改後<strong>不用重新啟動</strong>，會自動生效。</p>
+
+      <h3>放在哪裡</h3>
+      <div class="table-wrap">
+        <table class="stack">
+          <thead><tr><th>範圍</th><th>位置</th></tr></thead>
+          <tbody>
+            <tr><td>專案技能</td><td><code>&lt;專案根目錄&gt;/.dsh/skills/&lt;名稱&gt;/SKILL.md</code></td></tr>
+            <tr><td>個人全域技能</td><td><code>~/.dsh/skills/&lt;名稱&gt;/SKILL.md</code></td></tr>
+            <tr><td>另外也會讀</td><td><code>&lt;專案根目錄&gt;/.agents/skills</code>、<code>~/.agents/skills</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note warn">
+        <span class="note-title">「專案根目錄」是最近一個含 .git 的上層資料夾</span>
+        <p>找不到 <code>.git</code> 才用啟動目錄。所以如果模板資料夾放在某個 git 倉庫的子資料夾裡，請把 <code>.dsh/skills</code> 移到那個倉庫的根目錄，否則技能讀不到。</p>
+      </div>
+
+      <h3>SKILL.md 格式</h3>
+      <div class="code"><span class="label">.dsh/skills/doc-summary/SKILL.md（開頭部分）</span><pre><code>---
+name: doc-summary
+description: 读取一个文档，输出结构化要点摘要。
+whenToUse: 用户要求总结、概括或提炼某个文件的要点时。
+---
+
+# 文档摘要
+
+1. 确认要总结的文件路径……</code></pre></div>
+      <div class="table-wrap">
+        <table class="stack">
+          <thead><tr><th>欄位</th><th>說明</th></tr></thead>
+          <tbody>
+            <tr><td><code>name</code></td><td><strong>必填。</strong>小寫英文、數字、短橫線，例如 <code>doc-summary</code></td></tr>
+            <tr><td><code>description</code></td><td><strong>必填。</strong>一句話說明技能做什麼</td></tr>
+            <tr><td><code>whenToUse</code></td><td>選填。什麼情況該用這個技能</td></tr>
+            <tr><td><code>disable-model-invocation</code></td><td>選填。不讓模型自己決定呼叫</td></tr>
+            <tr><td><code>user-invocable</code></td><td>選填。使用者能不能直接呼叫</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted">注意：寫成駝峰式的 <code>disableModelInvocation</code>、<code>userInvocable</code> 會報錯；<code>allowed-tools</code>、<code>argument-hint</code> 不會被讀取。技能也可以寫成單一檔案 <code>&lt;名稱&gt;.md</code>。</p>
+
+      <h3>工作目錄</h3>
+      <p>啟動 dsh 的資料夾是預設工作目錄。在網頁介面裡，每個對話用的是你在介面中選擇的專案資料夾。</p>
+    </section>
+
+    <!-- 產生器 -->
+    <section id="generator">
+      <h2>重新產生模板</h2>
+      <p>倉庫裡的 <code>Create-DSH-Starter.ps1</code> 會重新產生整個 <code>dsh-starter</code> 資料夾和 <code>dsh-starter.zip</code>。修改模板內容時，改這支腳本再重跑即可。</p>
+      <p class="small muted">建議在倉庫以外的空資料夾執行，再把產生的 ZIP 和模板檔複製回倉庫根目錄，避免倉庫裡多出一層 <code>dsh-starter/</code>。</p>
+      <div class="code"><span class="label">在腳本所在資料夾執行（Windows PowerShell 5.1 或 PowerShell 7）</span><pre><code>powershell -ExecutionPolicy Bypass -File .\Create-DSH-Starter.ps1</code></pre></div>
+      <ul>
+        <li>輸出位置是<strong>目前所在的資料夾</strong>，不是腳本所在的資料夾。</li>
+        <li>已存在的模板檔會被覆蓋；你的 <code>.env</code> 不會被動到。</li>
+        <li>ZIP <strong>只打包腳本產生的 7 個模板檔</strong>。試用後留下的 <code>.env</code>、會話資料、個人檔案都不會被打包。</li>
+        <li>產生的檔案一律是 UTF-8（無 BOM）；<code>install.bat</code> 用 CRLF 換行，其他檔案用 LF。</li>
+      </ul>
+      <div class="note danger">
+        <span class="note-title">腳本本身必須存成「UTF-8 with BOM」</span>
+        <p>否則 Windows PowerShell 5.1 會把中文讀成亂碼，產生出來的檔案內容全錯。用 VS Code 編輯時，右下角編碼選「UTF-8 with BOM」再存檔。</p>
+      </div>
+    </section>
+
+    <!-- 版本 -->
+    <section id="versions">
+      <h2>版本與升級</h2>
+      <p>模板鎖定 <code>@deepseek-ai/dsh@0.1.5-rc.1</code>，是 2026 年 9 月 npm 上的 <code>latest</code> 版本，但仍是預發布版，介面可能會變。</p>
+      <div class="note">
+        <span class="note-title">版本號只鎖住 dsh 本體</span>
+        <p>dsh 依賴的數十個 <code>@deepseek-ai/dsh-*</code> 子套件寫的是 <code>^0.1.5-rc.1</code> 範圍，安裝時會拿到當時最新的相容版本。例如安裝 rc.1 本體，子套件可能是 rc.2。</p>
+      </div>
+      <h3>升級步驟</h3>
+      <ol>
+        <li>執行 <code>npm install -g @deepseek-ai/dsh@新版本號</code></li>
+        <li>把 <code>install.bat</code> 和 <code>install.sh</code> 裡的 <code>DSH_VERSION</code> 改成同一個版本號</li>
+        <li>用 <code>dsh web --help</code> 確認參數沒有改變</li>
+      </ol>
+      <p class="small muted">查看目前有哪些版本：<code>npm view @deepseek-ai/dsh dist-tags</code></p>
+    </section>
+
+    <!-- 疑難排解 -->
+    <section id="troubleshooting">
+      <h2>疑難排解</h2>
+
+      <details class="faq">
+        <summary>啟動失敗，訊息提到埠號或 address in use</summary>
+        <p>3080 被其他程式佔用了。改用 <code>dsh web --port 8080</code> 或 <code>dsh web --port 0</code>。</p>
+      </details>
+
+      <details class="faq">
+        <summary>瀏覽器顯示無法連線或未授權</summary>
+        <ul>
+          <li>確認終端機視窗還開著，dsh 還在執行。</li>
+          <li>複製終端機裡 <code>dsh web:</code> 那行的<strong>完整網址</strong>，不要只輸入 IP 和埠號。</li>
+          <li>重新啟動後網址會變，舊書籤不能用。</li>
+        </ul>
+      </details>
+
+      <details class="faq">
+        <summary>提示找不到 API Key，或 Key 無效</summary>
+        <ul>
+          <li>確認 <code>.env</code> 已存檔，而且是在模板資料夾裡啟動。</li>
+          <li>依照 <a href="#apikey">優先順序</a> 檢查環境變數和 <code>~/.dsh/.credentials.yaml</code>。</li>
+          <li>確認 Key 前後沒有多餘的空白或引號。</li>
+        </ul>
+      </details>
+
+      <details class="faq">
+        <summary>剛安裝完 dsh，卻顯示找不到 dsh 指令</summary>
+        <p>新安裝的指令有時要重開終端機才找得到。Windows 請關掉視窗後重新雙擊 <code>install.bat</code>；macOS / Linux 請開新的終端機再執行。</p>
+      </details>
+
+      <details class="faq">
+        <summary>macOS / Linux 安裝時出現 EACCES 權限錯誤</summary>
+        <p>npm 的全域目錄沒有寫入權限。建議改用 <a href="https://github.com/nvm-sh/nvm">nvm</a> 安裝 Node.js，或把 npm 全域目錄設到使用者目錄，不建議直接用 <code>sudo</code>。</p>
+      </details>
+
+      <details class="faq">
+        <summary>示例技能沒有出現</summary>
+        <ul>
+          <li>確認 <code>.dsh/skills/doc-summary/SKILL.md</code> 存在（<code>.dsh</code> 是隱藏資料夾）。</li>
+          <li>模板資料夾是不是放在某個 git 倉庫裡？請看 <a href="#skills">專案根目錄</a> 的說明。</li>
+          <li>確認 <code>SKILL.md</code> 開頭有 <code>name</code> 和 <code>description</code>，<code>name</code> 只用小寫英文、數字和短橫線。</li>
+        </ul>
+      </details>
+
+      <details class="faq">
+        <summary>macOS 上 install.sh 無法雙擊執行</summary>
+        <p>ZIP 不會保留執行權限，這是正常的。請在終端機用 <code>bash install.sh</code> 執行。</p>
+      </details>
+
+      <details class="faq">
+        <summary>執行 Create-DSH-Starter.ps1 後，檔案內容是亂碼</summary>
+        <p>腳本檔沒有存成「UTF-8 with BOM」。用 VS Code 重新以該編碼存檔，再執行一次。</p>
+      </details>
+    </section>
+
+    <!-- 安全 -->
+    <section id="security">
+      <h2>安全須知</h2>
+      <div class="note danger">
+        <span class="note-title"><code>.env</code> 裡是你的 API Key</span>
+        <ul>
+          <li>不要提交到 git（模板的 <code>.gitignore</code> 已經排除它）。</li>
+          <li>不要傳給別人、不要貼到聊天或截圖。</li>
+          <li>Key 外洩時，立刻到 DeepSeek 開放平台作廢並重新申請。</li>
+        </ul>
+      </div>
+      <ul>
+        <li>產生器打包的 ZIP 只含模板檔，可以放心分享。<strong>直接分享資料夾</strong>之前，請自己檢查裡面有沒有 <code>.env</code> 或私人檔案。</li>
+        <li>dsh 能讀寫工作目錄裡的檔案、執行指令。請在你信任的資料夾裡使用，不要直接在整個使用者目錄或系統磁碟根目錄啟動。</li>
+        <li>只從 npm 或官方 GitHub 取得 dsh。</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<footer>
+  <p>本頁內容對照 <code>@deepseek-ai/dsh</code> 0.1.5-rc.1（官方倉庫標籤 <code>dsh-v0.1.5-rc.1</code>）整理，2026 年 9 月。dsh 仍是預發布版，實際行為以官方文件和 <code>--help</code> 輸出為準。</p>
+  <p>DeepSeek Harness 由 DeepSeek 以 MIT 授權發布；本模板是非官方的入門範例。</p>
+</footer>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var btn = document.getElementById('themeBtn');
+  var icon = document.getElementById('themeIcon');
+  var text = document.getElementById('themeText');
+  var media = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+  var SUN = '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>';
+  var MOON = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+
+  function current() {
+    var t = root.getAttribute('data-theme');
+    if (t === 'light' || t === 'dark') return t;
+    return media && media.matches ? 'dark' : 'light';
+  }
+  function render() {
+    var dark = current() === 'dark';
+    // 按鈕顯示「按下去會切換成什麼」
+    icon.innerHTML = dark ? SUN : MOON;
+    text.textContent = dark ? '亮色' : '暗色';
+    btn.setAttribute('aria-label', dark ? '切換成亮色' : '切換成暗色');
+  }
+  btn.addEventListener('click', function () {
+    var next = current() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('dsh-theme', next); } catch (e) {}
+    render();
+  });
+  if (media) {
+    var onChange = function () { if (!root.hasAttribute('data-theme')) render(); };
+    if (media.addEventListener) media.addEventListener('change', onChange); else if (media.addListener) media.addListener(onChange);
+  }
+  render();
+
+  // 程式碼複製按鈕
+  document.querySelectorAll('.code pre').forEach(function (pre) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'copy';
+    b.textContent = '複製';
+    b.addEventListener('click', function () {
+      var clone = pre.cloneNode(true);
+      clone.querySelectorAll('.cm').forEach(function (c) { c.remove(); });
+      var value = clone.innerText.replace(/[ \t]+$/gm, '');
+      var done = function () { b.textContent = '已複製'; setTimeout(function () { b.textContent = '複製'; }, 1600); };
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(value).then(done, fallback);
+      } else { fallback(); }
+      function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = value; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) { b.textContent = '請手動複製'; }
+        ta.remove();
+      }
+    });
+    pre.parentNode.appendChild(b);
+  });
+
+  // 目錄高亮目前章節
+  var links = Array.prototype.slice.call(document.querySelectorAll('#tocList a'));
+  if ('IntersectionObserver' in window && links.length) {
+    var byId = {};
+    links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) {
+          links.forEach(function (a) { a.classList.remove('active'); });
+          var a = byId[en.target.id]; if (a) a.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    document.querySelectorAll('main section[id]').forEach(function (s) { obs.observe(s); });
+  }
+})();
+</script>
+</body>
+</html>

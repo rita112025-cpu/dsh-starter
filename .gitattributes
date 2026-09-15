@@ -1,0 +1,4 @@
+# 固定换行符，不受各人 core.autocrlf 设置影响
+* text=auto eol=lf
+*.bat text eol=crlf
+*.zip binary

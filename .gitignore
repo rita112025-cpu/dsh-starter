@@ -1,0 +1,14 @@
+# 密钥
+.env
+.env.*
+!.env.example
+
+# dsh 运行时数据（只保留技能）
+.dsh/*
+!.dsh/skills/
+
+# 依赖、日志、系统文件
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
