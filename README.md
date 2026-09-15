@@ -1,69 +1,61 @@
-# DeepSeek Harness 入門模板
+# DeepSeek Harness 入門範本套件
+基於 `@deepseek-ai/dsh` **0.1.5-rc.1**（2026 年 9 月 npm 上的 `latest` 版本，仍為預發布版）。
 
-以 `@deepseek-ai/dsh` **0.1.5-rc.1** 為基礎（2026 年 9 月 npm 上的 `latest` 版本，仍是預發布版）。
+完整圖文說明網站：https://rita112025-cpu.github.io/dsh-starter/
 
-完整圖文說明：https://rita112025-cpu.github.io/dsh-starter/
-
-## 準備工作
-
-- Node.js 22.19 以上的 22.x，或 Node.js 24 以上（https://nodejs.org/）
-- DeepSeek API Key
-- 只從 npm 或官方倉庫 https://github.com/deepseek-ai/deepseek-harness 取得 dsh
+## 先決條件
+- Node.js 22.19 以上的 22.x 版，或 Node.js 24 以上版本（https://nodejs.org/）
+- DeepSeek API 金鑰
+- 僅從 npm 或官方倉庫 https://github.com/deepseek-ai/deepseek-harness 取得 dsh
 
 ## 快速開始
+1. 取得範本，以下兩種方式擇一：
+   - 下載 `dsh-starter.zip`，解壓縮後進入 `dsh-starter` 資料夾（Windows「全部解壓縮」預設會多一層 `dsh-starter\dsh-starter`，請進到最裡面那一層）
+   - 使用 Git 複製倉庫：`git clone https://github.com/rita112025-cpu/dsh-starter.git`，再執行 `cd dsh-starter` 進入資料夾
+2. 第一次執行啟動指令檔，它會從 `.env.example` 建立 `.env` 並提示你填入金鑰：
+   - Windows：滑鼠雙擊 `install.bat`
+   - macOS / Linux：執行 `bash install.sh`
+3. 把 `.env` 裡的 `sk-xxxxxxxx...` 替換成你的真實金鑰，然後儲存檔案
+4. 再次執行啟動指令檔：若尚未安裝 dsh，會先進行安裝，接著執行 `dsh web`
+5. 瀏覽器會自動開啟；若未自動開啟，請複製終端裡以 `dsh web:` 開頭那一行的**完整網址**
 
-1. 取得模板，二選一：
-   - 下載 `dsh-starter.zip` 並解壓縮，進入 `dsh-starter` 資料夾（Windows「解壓縮全部」會多包一層 `dsh-starter\dsh-starter`，請進看得到 `install.bat` 的那層）
-   - `git clone https://github.com/rita112025-cpu/dsh-starter.git`，再 `cd dsh-starter`
-2. 第一次執行啟動腳本，它會從 `.env.example` 建立 `.env`，並請你填入 Key：
-   - Windows：雙擊 `install.bat`
-   - macOS / Linux：`bash install.sh`
-3. 把 `.env` 裡的 `sk-xxxxxxxx...` 換成你的真實 Key，存檔
-4. 再執行一次啟動腳本：還沒安裝 dsh 時會先安裝，接著執行 `dsh web`
-5. 瀏覽器會自動打開；沒打開時，複製終端機裡 `dsh web:` 開頭那一行的**完整網址**
+> 預設位址為 `127.0.0.1:3080`。**若 3080 已被佔用，dsh 會直接啟動失敗，不會自動更換通訊埠**。請改用 `dsh web --port 8080` 自行指定，或輸入 `dsh web --port 0` 讓系統自動挑選可用通訊埠。
+> 網址內含有一次性認證參數，只輸入 `127.0.0.1:通訊埠` 將無法進入系統。
 
-> 預設位址是 `127.0.0.1:3080`。**3080 被佔用時 dsh 會直接啟動失敗**，不會自動換埠號：改用 `dsh web --port 8080`，或 `dsh web --port 0` 讓系統挑一個空閒的埠號。
-> 網址裡帶一次性認證參數，只輸入 `127.0.0.1:埠號` 是進不去的。
-
-## 試用示例技能
-
-在網頁介面的對話框輸入：
-
+## 試用範例技能
+在網頁介面輸入：
 ```
-用 doc-summary 技能總結 workspace/note.md
+使用 doc-summary 技能整理 workspace/note.md 的內容
 ```
 
 ## 目錄說明
-
 ```
 dsh-starter/
 ├── README.md
-├── .env.example                      → 複製成 .env，填入 DEEPSEEK_API_KEY
-├── .gitignore                        → 避免 .env 被提交
-├── install.bat / install.sh          → 檢查環境、安裝、啟動 dsh web
-├── .dsh/skills/doc-summary/SKILL.md  → 示例技能（專案技能目錄）
-└── workspace/note.md                 → 示例文件
+├── .env.example                      → 複製為 .env，填入 DEEPSEEK_API_KEY
+├── .gitignore                        → 避免 .env 被提交至版本控制
+├── install.bat / install.sh          → 環境檢查 + 安裝 + 啟動 dsh web
+├── .dsh/skills/doc-summary/SKILL.md  → 範例技能（專案層級技能目錄）
+└── workspace/note.md                 → 範例文件
 ```
 
-## 常用指令（都要在本資料夾裡執行）
-
+## 常用指令（請務必在本資料夾內執行）
 ```bash
 dsh web                                   # 啟動網頁介面
-dsh web --port 8080                       # 指定埠號（--port 0 = 讓系統挑空閒埠號）
-dsh web --no-open                         # 不自動打開瀏覽器
-dsh --profile headless "用 doc-summary 技能總結 workspace/note.md"   # 一次性任務：結果印在終端機後結束
-dsh --help                                # 啟動器說明
-dsh web --help                            # 網頁介面自己的參數
-npx @deepseek-ai/dsh@0.1.5-rc.1 web       # 不想全域安裝時臨時執行（一樣要在本資料夾裡執行）
+dsh web --port 8080                       # 指定通訊埠（--port 0 = 由系統自動選用可用通訊埠）
+dsh web --no-open                         # 不自動開啟瀏覽器
+dsh --profile headless "使用 doc-summary 技能整理 workspace/note.md"   # 一次性執行：輸出結果後即結束
+dsh --help                                # 啟動程式說明
+dsh web --help                            # 網頁介面參數說明
+npx @deepseek-ai/dsh@0.1.5-rc.1 web       # 不安裝至全域，直接執行（同樣須在本資料夾內執行）
 ```
 
-## 需要知道的幾件事
-
-- dsh 只讀取**啟動目錄**裡的 `.env`（不會往上層資料夾找），另外再讀 `~/.dsh/.env`。啟動腳本會先切換到本資料夾，所以請用啟動腳本，或在本資料夾裡執行 dsh。
-- Key 的優先順序：系統環境變數 > 在 dsh 裡儲存過的 Key（`~/.dsh/.credentials.yaml`）> 本資料夾的 `.env` > `~/.dsh/.env`。改了 `.env` 卻沒生效，先檢查前兩項；環境變數就算設成空值，也會擋住 `.env`。
-- 啟動目錄是預設工作目錄；在網頁介面裡，每個對話用的是你在介面中選擇的專案資料夾。
-- 技能從「專案根目錄」下的 `.dsh/skills/<名稱>/SKILL.md` 讀取。專案根目錄是**最近一個含 `.git` 的上層資料夾**，找不到才用目前目錄。所以如果把本資料夾放進某個 git 倉庫的子資料夾，請把 `.dsh/skills` 移到那個倉庫的根目錄。
-- 新增或修改技能不需要重新啟動；`SKILL.md` 開頭的 `name`（小寫英文、數字、短橫線）和 `description` 是必填欄位，`whenToUse` 可不填。
-- 個人全域技能可以放在 `~/.dsh/skills/`；dsh 自己的設定檔在 `~/.dsh/profiles/web/cordis.patch.yml`，入門階段不用改。
-- `.env` 裡是你的密鑰：不要提交、不要傳給別人。產生器打包的 ZIP 只含模板檔，不含 `.env`；直接分享本資料夾之前，請自己檢查一次。
-- 升級 dsh：執行 `npm install -g @deepseek-ai/dsh@<版本號>`，並把兩個啟動腳本裡的 `DSH_VERSION` 改成同一個版本號。注意：版本號只鎖住 dsh 本體，它依賴的 `@deepseek-ai/dsh-*` 子套件寫的是 `^` 範圍，安裝時會拿到當時最新的相容預發布版（例如安裝 rc.1 本體，子套件可能是 rc.2）。
+## 使用須知
+- dsh 只會讀取**執行指令時所在目錄**的 `.env`（不會向上層尋找），另外也會讀取 `~/.dsh/.env`。啟動指令檔會自動切換到腳本所在的資料夾，建議透過啟動指令檔或先切換至本資料夾再執行指令。
+- 金鑰優先順序：系統環境變數 → dsh 內已儲存的金鑰（`~/.dsh/.credentials.yaml`）→ 本機資料夾 `.env` → `~/.dsh/.env`。若修改 `.env` 後仍無效，請優先檢查前兩項；即使環境變數被設成空值，也會優先於 `.env` 生效。
+- 執行指令所在的資料夾即為預設工作目錄；在網頁介面中，每個對話階段會使用你在介面中選取的專案資料夾。
+- 技能檔案會從「專案根目錄」下的 `.dsh/skills/<技能名稱>/SKILL.md` 讀取。專案根目錄的認定方式：以**最近上層含有 `.git` 的資料夾**為準，若無則以目前所在目錄為準。因此，若你將本資料夾放置在某個 Git 倉庫的子目錄中，請將 `.dsh/skills` 移至該倉庫的最上層根目錄。
+- 新增或修改技能後**無須重新啟動系統**；`SKILL.md` 開頭的 `name`（僅限小寫英文字母、數字及減號）及 `description` 為必填欄位，`whenToUse` 則為選填。
+- 個人專屬技能可放置在 `~/.dsh/skills/`；dsh 本身的設定檔位於 `~/.dsh/profiles/web/cordis.patch.yml`，入門階段建議無需調整。
+- `.env` 含有機密資訊：請不要提交至版本控制、不要傳送給他人。透過產生器建立的壓縮檔僅包含範本檔案，不含 `.env` 可安全分享；直接分享本資料夾前，請務必先自行檢查內容。
+- 升級 dsh 版本：執行 `npm install -g @deepseek-ai/dsh@<版本號>`，並同步更新兩個啟動指令檔中的 `DSH_VERSION` 版本號。請注意：版本號僅鎖定 dsh 主程式本體，其相依的 `@deepseek-ai/dsh-*` 子套件採用 `^` 相容範圍，安裝時會自動取得當時最新的預發布版（例如安裝 rc.1 版主程式時，子套件可能會安裝到 rc.2 版）。
