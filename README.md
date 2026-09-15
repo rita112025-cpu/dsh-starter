@@ -1,65 +1,69 @@
-# DeepSeek Harness 入门模板包
+# DeepSeek Harness 入門模板
 
-基于 `@deepseek-ai/dsh` **0.1.5-rc.1**（2026-09 的 npm `latest`，仍是预发布版）。
+以 `@deepseek-ai/dsh` **0.1.5-rc.1** 為基礎（2026 年 9 月 npm 上的 `latest` 版本，仍是預發布版）。
 
-## 前置条件
+完整圖文說明：https://rita112025-cpu.github.io/dsh-starter/
 
-- Node.js 22.19 或更新的 22.x，或 Node.js 24 及以上（https://nodejs.org/）
+## 準備工作
+
+- Node.js 22.19 以上的 22.x，或 Node.js 24 以上（https://nodejs.org/）
 - DeepSeek API Key
-- 只从 npm 或官方仓库 https://github.com/deepseek-ai/deepseek-harness 获取 dsh
+- 只從 npm 或官方倉庫 https://github.com/deepseek-ai/deepseek-harness 取得 dsh
 
-## 快速开始
+## 快速開始
 
-1. 解压后进入 `dsh-starter` 文件夹（Windows「全部解压缩」会多套一层 `dsh-starter\dsh-starter`，进最里面那层）
-2. 第一次运行启动脚本，它会从 `.env.example` 生成 `.env` 并提示你填 Key：
-   - Windows：双击 `install.bat`
+1. 取得模板，二選一：
+   - 下載 `dsh-starter.zip` 並解壓縮，進入 `dsh-starter` 資料夾（Windows「解壓縮全部」會多包一層 `dsh-starter\dsh-starter`，請進看得到 `install.bat` 的那層）
+   - `git clone https://github.com/rita112025-cpu/dsh-starter.git`，再 `cd dsh-starter`
+2. 第一次執行啟動腳本，它會從 `.env.example` 建立 `.env`，並請你填入 Key：
+   - Windows：雙擊 `install.bat`
    - macOS / Linux：`bash install.sh`
-3. 把 `.env` 里的 `sk-xxxxxxxx...` 换成你的真实 Key，保存
-4. 再运行一次启动脚本：没装 dsh 时会先装，然后执行 `dsh web`
-5. 浏览器会自动打开；没打开时，复制终端里 `dsh web:` 开头那一行的**完整地址**
+3. 把 `.env` 裡的 `sk-xxxxxxxx...` 換成你的真實 Key，存檔
+4. 再執行一次啟動腳本：還沒安裝 dsh 時會先安裝，接著執行 `dsh web`
+5. 瀏覽器會自動打開；沒打開時，複製終端機裡 `dsh web:` 開頭那一行的**完整網址**
 
-> 默认地址是 `127.0.0.1:3080`。**3080 被占用时 dsh 会直接启动失败**，不会自动换端口：改用 `dsh web --port 8080`，或 `dsh web --port 0` 让系统挑一个空闲端口。
-> 地址里带一次性认证参数，只输 `127.0.0.1:端口` 进不去。
+> 預設位址是 `127.0.0.1:3080`。**3080 被佔用時 dsh 會直接啟動失敗**，不會自動換埠號：改用 `dsh web --port 8080`，或 `dsh web --port 0` 讓系統挑一個空閒的埠號。
+> 網址裡帶一次性認證參數，只輸入 `127.0.0.1:埠號` 是進不去的。
 
-## 试用示例技能
+## 試用示例技能
 
-在 Web 界面里说：
+在網頁介面的對話框輸入：
 
 ```
-用 doc-summary 技能总结 workspace/note.md
+用 doc-summary 技能總結 workspace/note.md
 ```
 
-## 目录说明
+## 目錄說明
 
 ```
 dsh-starter/
 ├── README.md
-├── .env.example                      → 复制为 .env，填 DEEPSEEK_API_KEY
-├── .gitignore                        → 防止 .env 被提交
-├── install.bat / install.sh          → 检查环境 + 安装 + 启动 dsh web
-├── .dsh/skills/doc-summary/SKILL.md  → 示例技能（项目级技能目录）
-└── workspace/note.md                 → 示例文档
+├── .env.example                      → 複製成 .env，填入 DEEPSEEK_API_KEY
+├── .gitignore                        → 避免 .env 被提交
+├── install.bat / install.sh          → 檢查環境、安裝、啟動 dsh web
+├── .dsh/skills/doc-summary/SKILL.md  → 示例技能（專案技能目錄）
+└── workspace/note.md                 → 示例文件
 ```
 
-## 常用命令（都要在本文件夹里执行）
+## 常用指令（都要在本資料夾裡執行）
 
 ```bash
-dsh web                                   # 启动浏览器界面
-dsh web --port 8080                       # 指定端口（--port 0 = 系统挑空闲端口）
-dsh web --no-open                         # 不自动打开浏览器
-dsh --profile headless "用 doc-summary 技能总结 workspace/note.md"   # 一次性任务：结果输出到终端后退出
-dsh --help                                # 启动器帮助
-dsh web --help                            # Web 应用自己的参数
-npx @deepseek-ai/dsh@0.1.5-rc.1 web       # 不想全局安装时临时运行（同样要在本文件夹里执行）
+dsh web                                   # 啟動網頁介面
+dsh web --port 8080                       # 指定埠號（--port 0 = 讓系統挑空閒埠號）
+dsh web --no-open                         # 不自動打開瀏覽器
+dsh --profile headless "用 doc-summary 技能總結 workspace/note.md"   # 一次性任務：結果印在終端機後結束
+dsh --help                                # 啟動器說明
+dsh web --help                            # 網頁介面自己的參數
+npx @deepseek-ai/dsh@0.1.5-rc.1 web       # 不想全域安裝時臨時執行（一樣要在本資料夾裡執行）
 ```
 
-## 需要知道的几件事
+## 需要知道的幾件事
 
-- dsh 只读取**启动目录**里的 `.env`（不往上级目录找），再加上 `~/.dsh/.env`。启动脚本会先切换到本文件夹，所以请用启动脚本或在本文件夹里运行。
-- Key 的优先级：系统环境变量 > 在 dsh 里保存过的 Key（`~/.dsh/.credentials.yaml`）> 本文件夹 `.env` > `~/.dsh/.env`。改了 `.env` 却不生效，先检查前两处；环境变量即使设成空值也会挡住 `.env`。
-- 启动目录是默认工作目录；在 Web 界面里，每个会话用的是你在界面里选的项目文件夹。
-- 技能从「项目根目录」下的 `.dsh/skills/<名字>/SKILL.md` 读取。项目根目录是**最近一个含 `.git` 的上级目录**，找不到才用当前目录。所以如果你把本文件夹放进了某个 git 仓库的子目录，请把 `.dsh/skills` 挪到那个仓库根目录。
-- 新增或修改技能不需要重启；`SKILL.md` 开头的 `name`（小写字母、数字、短横线）和 `description` 是必填项，`whenToUse` 可选。
-- 个人全局技能可放在 `~/.dsh/skills/`；dsh 自己的配置在 `~/.dsh/profiles/web/cordis.patch.yml`，入门阶段不用改。
-- `.env` 含密钥：不要提交、不要发给别人。生成器打包的 ZIP 只含模板文件，不含 `.env`；直接分享本文件夹前请自己检查。
-- 升级 dsh：`npm install -g @deepseek-ai/dsh@<版本号>`，并同步修改两个启动脚本里的 `DSH_VERSION`。注意：版本号只锁住 dsh 本体，它依赖的 `@deepseek-ai/dsh-*` 子包写的是 `^` 范围，安装时会取当时最新的兼容预发布版（例如 rc.1 本体会装到 rc.2 的子包）。
+- dsh 只讀取**啟動目錄**裡的 `.env`（不會往上層資料夾找），另外再讀 `~/.dsh/.env`。啟動腳本會先切換到本資料夾，所以請用啟動腳本，或在本資料夾裡執行 dsh。
+- Key 的優先順序：系統環境變數 > 在 dsh 裡儲存過的 Key（`~/.dsh/.credentials.yaml`）> 本資料夾的 `.env` > `~/.dsh/.env`。改了 `.env` 卻沒生效，先檢查前兩項；環境變數就算設成空值，也會擋住 `.env`。
+- 啟動目錄是預設工作目錄；在網頁介面裡，每個對話用的是你在介面中選擇的專案資料夾。
+- 技能從「專案根目錄」下的 `.dsh/skills/<名稱>/SKILL.md` 讀取。專案根目錄是**最近一個含 `.git` 的上層資料夾**，找不到才用目前目錄。所以如果把本資料夾放進某個 git 倉庫的子資料夾，請把 `.dsh/skills` 移到那個倉庫的根目錄。
+- 新增或修改技能不需要重新啟動；`SKILL.md` 開頭的 `name`（小寫英文、數字、短橫線）和 `description` 是必填欄位，`whenToUse` 可不填。
+- 個人全域技能可以放在 `~/.dsh/skills/`；dsh 自己的設定檔在 `~/.dsh/profiles/web/cordis.patch.yml`，入門階段不用改。
+- `.env` 裡是你的密鑰：不要提交、不要傳給別人。產生器打包的 ZIP 只含模板檔，不含 `.env`；直接分享本資料夾之前，請自己檢查一次。
+- 升級 dsh：執行 `npm install -g @deepseek-ai/dsh@<版本號>`，並把兩個啟動腳本裡的 `DSH_VERSION` 改成同一個版本號。注意：版本號只鎖住 dsh 本體，它依賴的 `@deepseek-ai/dsh-*` 子套件寫的是 `^` 範圍，安裝時會拿到當時最新的相容預發布版（例如安裝 rc.1 本體，子套件可能是 rc.2）。
